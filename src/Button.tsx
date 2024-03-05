@@ -1,14 +1,13 @@
 import React from "react";
 
-type ButtonProps = React.ComponentProps<"button"> & {
-  size?: string;
+type ButtonProps = {
+  total: number;
+  setTotal: React.Dispatch<React.SetStateAction<number>>;
 };
 
-const Button = ({ size, children, ...props }: ButtonProps) => {
+const Button = ({ total, setTotal }: ButtonProps) => {
   return (
-    <button style={{ fontSize: size }} {...props}>
-      {children}
-    </button>
+    <button onClick={() => setTotal((t) => t + 1)}>Increment {total}</button>
   );
 };
 
