@@ -2,14 +2,20 @@ import React from "react";
 
 type InputProps = React.ComponentProps<"input"> & {
   label: string;
-  id: string;
-  name: string;
+  setState: React.Dispatch<React.SetStateAction<string>>;
 };
-const Input = ({ label, id, name, ...props }: InputProps) => {
+
+const Input = ({ label, setState, ...props }: InputProps) => {
   return (
     <div style={{ marginBottom: "1rem" }}>
-      <label htmlFor={id}>{label}</label>
-      <input id={id} name={name} type="text" {...props} />
+      <label htmlFor={label}>{label}</label>
+      <input
+        id={label}
+        name={label}
+        onChange={({ currentTarget }) => setState(currentTarget.value)}
+        type="text"
+        {...props}
+      />
     </div>
   );
 };
