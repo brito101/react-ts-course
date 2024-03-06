@@ -1,41 +1,59 @@
 import React from "react";
-import Input from "./Input";
-
-type Sales = {
-  id: string;
-  nome: string;
-  preco: number;
-  status: string;
-};
+import videoSrc from "./video.mp4";
 
 function App() {
-  const [start, setStart] = React.useState("");
-  const [end, setEnd] = React.useState("");
-  const [data, setData] = React.useState<null | Sales[]>(null);
+  const video = React.useRef<HTMLVideoElement>(null);
+  const [playing, setPlaying] = React.useState(false);
 
   React.useEffect(() => {
-    if (start !== "" && end !== "") {
-      fetch(`https://data.origamid.dev/vendas/?inicio=${start}&final=${end}`)
-        .then((r) => r.json())
-        .then((json) => setData(json as Sales[]))
-        .catch((error) => console.log(error));
+    console.log("test");
+  }, []);
+
+  function forward() {
+    if (!video.current) return;
+    video.current.currentTime += 2;
+  }
+
+  function changePlayBackRate(speed: number) {
+    if (!video.current) return;
+    video.current.playbackRate = speed;
+  }
+
+  function mute() {
+    if (!video.current) return;
+    video.current.muted = !video.current.muted;
+  }
+
+  async function pictureInPicture() {
+    if (!video.current) return;
+    if (document.pictureInPictureElement) {
+      await document.exitPictureInPicture();
+    } else {
+      await video.current.requestPictureInPicture();
     }
-  }, [start, end]);
+  }
 
   return (
     <div>
-      <div>
-        <Input label="Start" type="date" setState={setStart} value={start} />
-        <Input label="End" type="date" setState={setEnd} value={end} />
+      <div className="flex">
+        {playing ? (
+          <button onClick={() => video.current?.pause()}>Pause</button>
+        ) : (
+          <button onClick={() => video.current?.play()}>Play</button>
+        )}
+        <button onClick={forward}>+ 2s</button>
+        <button onClick={() => changePlayBackRate(1)}>1x</button>
+        <button onClick={() => changePlayBackRate(2)}>2x</button>
+        <button onClick={pictureInPicture}>PiP</button>
+        <button onClick={mute}>M</button>
       </div>
-      <ul>
-        {data !== null &&
-          data.map((sale) => (
-            <li key={sale.id}>
-              {sale.nome}: {sale.status}
-            </li>
-          ))}
-      </ul>
+      <video
+        controls
+        ref={video}
+        src={videoSrc}
+        onPlay={() => setPlaying(true)}
+        onPause={() => setPlaying(false)}
+      ></video>
     </div>
   );
 }
