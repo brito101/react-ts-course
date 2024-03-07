@@ -1,60 +1,49 @@
 import React from "react";
-import videoSrc from "./video.mp4";
+import useFetch from "./useFetch";
+
+type Product = {
+  id: string;
+  nome: string;
+  descricao: string;
+  quantidade: number;
+  preco: number;
+  internacional: boolean;
+};
+
+const PRODUCTS_URL = "https://data.origamid.dev/produtos";
 
 function App() {
-  const video = React.useRef<HTMLVideoElement>(null);
-  const [playing, setPlaying] = React.useState(false);
-
-  React.useEffect(() => {
-    console.log("test");
-  }, []);
-
-  function forward() {
-    if (!video.current) return;
-    video.current.currentTime += 2;
-  }
-
-  function changePlayBackRate(speed: number) {
-    if (!video.current) return;
-    video.current.playbackRate = speed;
-  }
-
-  function mute() {
-    if (!video.current) return;
-    video.current.muted = !video.current.muted;
-  }
-
-  async function pictureInPicture() {
-    if (!video.current) return;
-    if (document.pictureInPictureElement) {
-      await document.exitPictureInPicture();
-    } else {
-      await video.current.requestPictureInPicture();
-    }
-  }
+  const [id, setId] = React.useState("p001");
+  const product = useFetch<Product>(`${PRODUCTS_URL}/${id}/`);
+  const products = useFetch<Product[]>(PRODUCTS_URL);
 
   return (
-    <div>
-      <div className="flex">
-        {playing ? (
-          <button onClick={() => video.current?.pause()}>Pause</button>
-        ) : (
-          <button onClick={() => video.current?.play()}>Play</button>
-        )}
-        <button onClick={forward}>+ 2s</button>
-        <button onClick={() => changePlayBackRate(1)}>1x</button>
-        <button onClick={() => changePlayBackRate(2)}>2x</button>
-        <button onClick={pictureInPicture}>PiP</button>
-        <button onClick={mute}>M</button>
+    <section className="flex">
+      <div>
+        {products.data &&
+          products.data.map((product) => (
+            <button
+              style={{ fontSize: "1rem" }}
+              key={product.id}
+              onClick={() => setId(product.id)}
+            >
+              {product.id}
+            </button>
+          ))}
       </div>
-      <video
-        controls
-        ref={video}
-        src={videoSrc}
-        onPlay={() => setPlaying(true)}
-        onPause={() => setPlaying(false)}
-      ></video>
-    </div>
+      <div>
+        {product.loading && <div>Loading...</div>}
+        {product.data && (
+          <ul>
+            <li>ID: {product.data.id}</li>
+            <li>Name: {product.data.nome}</li>
+            <li>Quantity: {product.data.quantidade}</li>
+            <li>Description: {product.data.descricao}</li>
+            {product.data.internacional ? <li>Origin: International</li> : ""}
+          </ul>
+        )}
+      </div>
+    </section>
   );
 }
 
