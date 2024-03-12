@@ -5,6 +5,7 @@ import settings from "../assets/icons/settings.svg";
 import contact from "../assets/icons/contact.svg";
 import exit from "../assets/icons/exit.svg";
 import FinTechSVG from "../assets/FinTechSVG";
+import { NavLink } from "react-router-dom";
 
 const SideNav = () => {
   return (
@@ -15,13 +16,13 @@ const SideNav = () => {
           <span>
             <img src={resume} alt="" />
           </span>
-          <a href="">Resume</a>
+          <NavLink to="/">Resume</NavLink>
         </li>
         <li>
           <span>
             <img src={sales} alt="" />
           </span>
-          <a href="">Sales</a>
+          <NavLink to="/sales">Sales</NavLink>
         </li>
         <li>
           <span>
